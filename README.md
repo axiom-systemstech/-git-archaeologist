@@ -175,6 +175,6 @@ MIT. Haz lo que quieras. Si te sirve, dale una ⭐ en GitHub y cuéntalo en Link
 
 <div align="center">
 
-Hecho con 💀 y 🔥 por <a href="https://github.com/axiom-systemstech">@tuusuario</a>
+Hecho con 💀 y 🔥 por <a href="https://github.com/axiom-systemstech">@axiom-systemstech</a>
 
 </div>
