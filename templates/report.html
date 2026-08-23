@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="es">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏺 Git Archaeologist — {{REPO_NAME}}</title>
+  <style>
+        /* === TU ESTILO PERSONALIZADO AQUÍ === */
+        :root {
+            --bg: #0d1117;
+            --bg2: #161b22;
+            --bg3: #21262d;
+            --text: #c9d1d9;
+            --text2: #8b949e;
+            --accent: #58a6ff;
+            --zombie: #f85149;
+            --hotspot: #ffa657;
+            --ok: #3fb950;
+            --border: #30363d;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+        header { text-align: center; padding: 3rem 0; border-bottom: 1px solid var(--border); margin-bottom: 2rem; }
+        h1 { font-size: 3rem; background: linear-gradient(135deg, var(--accent), #a371f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { color: var(--text2); }
+        .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .metric { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; }
+        .metric b { display: block; font-size: 2.5rem; margin-bottom: 0.25rem; }
+        .metric-commits { color: var(--accent); }
+        .metric-zombies { color: var(--zombie); }
+        .metric-hotspots { color: var(--hotspot); }
+        .metric-files { color: var(--ok); }
+        .metric-label { color: var(--text2); font-size: 0.8rem; text-transform: uppercase; }
+        .section { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 2rem; }
+        .section-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.75rem; }
+        .section-header h2 { font-size: 1.2rem; }
+        .section-body { padding: 1.5rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 0.875rem 1rem; border-bottom: 1px solid var(--border); text-align: left; }
+        th { color: var(--text2); font-size: 0.8rem; text-transform: uppercase; font-weight: 500; }
+        tr:hover td { background: var(--bg3); }
+        .filename { font-family: SF Mono, Monaco, monospace; font-size: 0.9rem; color: var(--accent); }
+        .bar { width: 100%; height: 8px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+        .bar-fill { height: 100%; border-radius: 4px; }
+        .graph-wrap { width: 100%; height: 500px; position: relative; background: var(--bg); border-radius: 8px; }
+        canvas { display: block; }
+        .tooltip { position: fixed; background: var(--bg3); border: 1px solid var(--border); padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.8rem; pointer-events: none; z-index: 1000; display: none; }
+        .timeline-wrap { overflow-x: auto; padding-bottom: 1rem; }
+        .insight { background: linear-gradient(135deg, rgba(88,166,255,0.1), rgba(163,113,247,0.1)); border-left: 3px solid var(--accent); padding: 1rem 1.5rem; border-radius: 0 8px 8px 0; margin-bottom: 2rem; }
+        code { background: var(--bg3); padding: 0.15rem 0.4rem; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+        @media (max-width: 768px) { .container { padding: 1rem; } h1 { font-size: 2rem; } .metrics { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+ </head>
+ <body>
+  <div class="tooltip" id="tooltip"></div>
+  <div class="container">
+   <header>
+    <h1>🏺 Git Archaeologist</h1>
+    <p class="subtitle">{{REPO_NAME}} — {{TOTAL_COMMITS}} commits analizados</p>
+   </header>
+   <div class="metrics">
+    <div class="metric">
+     <b class="metric-commits">{{TOTAL_COMMITS}}</b><span class="metric-label">Commits</span>
+    </div>
+    <div class="metric">
+     <b class="metric-files">{{TOTAL_FILES}}</b><span class="metric-label">Archivos</span>
+    </div>
+    <div class="metric">
+     <b class="metric-zombies">{{ZOMBIE_COUNT}}</b><span class="metric-label">Zombies 🧟</span>
+    </div>
+    <div class="metric">
+     <b class="metric-hotspots">{{HOTSPOT_COUNT}}</b><span class="metric-label">Hotspots 🔥</span>
+    </div>
+   </div>
+   <div class="insight">
+    <strong>💡 Insight:</strong> {{ZOMBIE_COUNT}} archivos llevan más de {{ZOMBIE_DAYS}} días sin tocarse. {{TOP_COOCURRENCE}}
+   </div>
+   <div class="section">
+    <div class="section-header">
+     <span>🧟</span>
+     <h2>Archivos Zombies</h2>
+    </div>
+    <div class="section-body">
+     <table>
+      <thead>
+       <tr>
+        <th>Archivo</th>
+        <th>Último commit</th>
+        <th>Días muerto</th>
+        <th>Total commits</th>
+        <th>Riesgo</th>
+       </tr>
+      </thead>
+      <tbody>{{ZOMBIE_ROWS}}</tbody>
+     </table>
+    </div>
+   </div>
+   <div class="section">
+    <div class="section-header">
+     <span>🔥</span>
+     <h2>Hotspots</h2>
+    </div>
+    <div class="section-body">
+     <table>
+      <thead>
+       <tr>
+        <th>Archivo</th>
+        <th>Commits recientes</th>
+        <th>Total</th>
+        <th>Último</th>
+        <th>Intensidad</th>
+       </tr>
+      </thead>
+      <tbody>{{HOTSPOT_ROWS}}</tbody>
+     </table>
+    </div>
+   </div>
+   <div class="section">
+    <div class="section-header">
+     <span>🔗</span>
+     <h2>Grafo de Co-ocurrencia</h2>
+    </div>
+    <div class="section-body">
+     <div class="graph-wrap" id="graphWrap">
+      <canvas id="graphCanvas"></canvas>
+     </div>
+    </div>
+   </div>
+   <div class="section">
+    <div class="section-header">
+     <span>📅</span>
+     <h2>Timeline de Actividad</h2>
+    </div>
+    <div class="section-body">
+     <div class="timeline-wrap" id="timelineWrap"></div>
+    </div>
+   </div>
+  </div>
+  <script>
+        const DATA = {{DATA}};
+
+        // === GRAFO DE FUERZAS ===
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+        const wrap = document.getElementById('graphWrap');
+        const tooltip = document.getElementById('tooltip');
+
+        function resize() { canvas.width = wrap.clientWidth; canvas.height = wrap.clientHeight; }
+        resize(); window.addEventListener('resize', resize);
+
+        const nodes = DATA.graph_nodes.map(n => ({
+            ...n, x: canvas.width/2 + (Math.random()-0.5)*200, y: canvas.height/2 + (Math.random()-0.5)*200,
+            vx: 0, vy: 0, r: Math.max(12, Math.min(45, 8 + n.commits * 2.5))
+        }));
+        const links = DATA.graph_links.map(l => ({ ...l, source: nodes[l.source], target: nodes[l.target] }));
+
+        let dragged = null, hover = null;
+        canvas.addEventListener('mousedown', e => {
+            const r = canvas.getBoundingClientRect();
+            const mx = e.clientX - r.left, my = e.clientY - r.top;
+            dragged = nodes.find(n => { const dx=mx-n.x, dy=my-n.y; return dx*dx+dy*dy < n.r*n.r; });
+        });
+        canvas.addEventListener('mousemove', e => {
+            const r = canvas.getBoundingClientRect();
+            const mx = e.clientX - r.left, my = e.clientY - r.top;
+            if (dragged) { dragged.x = mx; dragged.y = my; dragged.vx = dragged.vy = 0; }
+            hover = nodes.find(n => { const dx=mx-n.x, dy=my-n.y; return dx*dx+dy*dy < n.r*n.r; });
+            if (hover) {
+                tooltip.style.display = 'block'; tooltip.style.left = (e.clientX + 15) + 'px'; tooltip.style.top = (e.clientY + 15) + 'px';
+                tooltip.innerHTML = `<strong>${hover.id}</strong><br>Commits: ${hover.commits}<br>Líneas: ${hover.lines}`;
+                canvas.style.cursor = 'pointer';
+            } else { tooltip.style.display = 'none'; canvas.style.cursor = 'default'; }
+        });
+        canvas.addEventListener('mouseup', () => dragged = null);
+        canvas.addEventListener('mouseleave', () => { dragged = null; tooltip.style.display = 'none'; });
+
+        function loop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            nodes.forEach((a, i) => nodes.forEach((b, j) => {
+                if (i >= j) return; const dx = b.x - a.x, dy = b.y - a.y, d = Math.sqrt(dx*dx + dy*dy) || 1;
+                const f = 5000 / (d * d); const fx = (dx/d) * f, fy = (dy/d) * f;
+                a.vx -= fx; a.vy -= fy; b.vx += fx; b.vy += fy;
+            }));
+            links.forEach(l => {
+                const dx = l.target.x - l.source.x, dy = l.target.y - l.source.y;
+                const d = Math.sqrt(dx*dx + dy*dy) || 1; const f = (d - 100) * 0.04;
+                const fx = (dx/d) * f, fy = (dy/d) * f;
+                l.source.vx += fx; l.source.vy += fy; l.target.vx -= fx; l.target.vy -= fy;
+            });
+            nodes.forEach(n => {
+                if (n === dragged) return;
+                n.vx += (canvas.width/2 - n.x) * 0.008; n.vy += (canvas.height/2 - n.y) * 0.008;
+                n.vx *= 0.88; n.vy *= 0.88; n.x += n.vx; n.y += n.vy;
+                n.x = Math.max(n.r, Math.min(canvas.width - n.r, n.x));
+                n.y = Math.max(n.r, Math.min(canvas.height - n.r, n.y));
+            });
+            links.forEach(l => {
+                ctx.beginPath(); ctx.moveTo(l.source.x, l.source.y); ctx.lineTo(l.target.x, l.target.y);
+                ctx.strokeStyle = `rgba(139,148,158,${Math.min(0.6, l.value/5)})`; ctx.lineWidth = Math.max(1, l.value * 0.8); ctx.stroke();
+            });
+            nodes.forEach(n => {
+                const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r + 8);
+                grad.addColorStop(0, 'rgba(88,166,255,0.25)'); grad.addColorStop(1, 'rgba(88,166,255,0)');
+                ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(n.x, n.y, n.r + 8, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI*2);
+                ctx.fillStyle = n === hover ? '#79c0ff' : '#58a6ff'; ctx.fill();
+                ctx.fillStyle = '#fff'; ctx.font = 'bold 10px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                const label = n.id.length > 14 ? n.id.substring(0, 11) + '...' : n.id;
+                ctx.fillText(label, n.x, n.y);
+            });
+            requestAnimationFrame(loop);
+        }
+        loop();
+
+        // === TIMELINE SVG ===
+        const tw = document.getElementById('timelineWrap');
+        const cell = 16, gap = 2, labelW = 150, headH = 30;
+        const months = DATA.months;
+        const files = DATA.all_files;
+        const maxC = Math.max(...DATA.timeline.map(d => d.count), 1);
+        const w = labelW + months.length * (cell + gap) + 20;
+        const h = headH + files.length * (cell + gap) + 20;
+
+        let svg = `<svg width="${w}" height="${h}" style="background:#0d1117;border-radius:8px;min-width:${w}px">`;
+        months.forEach((m, i) => {
+            const x = labelW + i * (cell + gap) + cell/2;
+            svg += `<text x="${x}" y="18" fill="#8b949e" font-size="9" text-anchor="middle" transform="rotate(-50,${x},18)">${m}</text>`;
+        });
+        files.forEach((f, fi) => {
+            const y = headH + fi * (cell + gap);
+            svg += `<text x="${labelW - 8}" y="${y + cell/2 + 3}" fill="#c9d1d9" font-size="10" text-anchor="end" font-family="monospace">${f}</text>`;
+            months.forEach((m, mi) => {
+                const d = DATA.timeline.find(t => t.file === f && t.month === m);
+                const c = d ? d.count : 0;
+                const int = c / maxC;
+                const color = int === 0 ? '#21262d' : int < 0.25 ? '#0e4429' : int < 0.5 ? '#006d32' : int < 0.75 ? '#26a641' : '#39d353';
+                svg += `<rect x="${labelW + mi * (cell + gap)}" y="${y}" width="${cell}" height="${cell}" fill="${color}" rx="2" data-f="${f}" data-m="${m}" data-c="${c}"/>`;
+            });
+        });
+        svg += '</svg>';
+        tw.innerHTML = svg;
+
+        tw.addEventListener('mousemove', e => {
+            if (e.target.tagName === 'rect' && e.target.dataset.c) {
+                tooltip.style.display = 'block'; tooltip.style.left = (e.clientX + 15) + 'px'; tooltip.style.top = (e.clientY + 15) + 'px';
+                tooltip.innerHTML = `<strong>${e.target.dataset.f}</strong><br>${e.target.dataset.m}<br>Commits: ${e.target.dataset.c}`;
+            }
+        });
+        tw.addEventListener('mouseleave', () => tooltip.style.display = 'none');
+    </script>
+ </body>
+</html>
