@@ -8,7 +8,7 @@ Un forense para tu código. Sin dependencias externas. Un solo archivo HTML de s
 
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/tuusuario/git-archaeologist?style=social)](https://github.com/tuusuario/git-archaeologist)
+[![GitHub stars](https://img.shields.io/github/stars/axiom-systemstech/git-archaeologist?style=social)](https://github.com/axiom-systemstech/git-archaeologist)
 
 </div>
 
@@ -175,6 +175,6 @@ MIT. Haz lo que quieras. Si te sirve, dale una ⭐ en GitHub y cuéntalo en Link
 
 <div align="center">
 
-Hecho con 💀 y 🔥 por <a href="https://github.com/tuusuario">@tuusuario</a>
+Hecho con 💀 y 🔥 por <a href="https://github.com/axiom-systemstech">@tuusuario</a>
 
 </div>
