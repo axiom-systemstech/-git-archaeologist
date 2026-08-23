@@ -33,7 +33,7 @@ Git Archaeologist analiza la historia completa de tu repositorio Git y genera un
 
 ```bash
 # Clona el repo
-git clone https://github.com/tuusuario/git-archaeologist.git
+git clone https://github.com/axiom_systemstech/git-archaeologist.git
 cd git-archaeologist
 
 # No necesitas instalar nada. Python 3.8+ y Git.
