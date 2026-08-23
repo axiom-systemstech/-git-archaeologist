@@ -1,0 +1,3 @@
+# Git Archaeologist
+# Sin dependencias externas. Solo Python 3.8+ y Git.
+# Este archivo existe por si en el futuro se añaden extras.

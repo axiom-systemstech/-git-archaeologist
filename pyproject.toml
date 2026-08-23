@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "git-archaeologist"
+version = "1.0.0"
+description = "Descubre zombis, hotspots y relaciones ocultas en tu historial de Git"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Tu Nombre", email = "tu@email.com"}
+]
+keywords = ["git", "analysis", "code-quality", "repository", "forensics"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Version Control :: Git",
+]
+requires-python = ">=3.8"
+
+[project.urls]
+Homepage = "https://github.com/tuusuario/git-archaeologist"
+Repository = "https://github.com/tuusuario/git-archaeologist"
+Issues = "https://github.com/tuusuario/git-archaeologist/issues"
+
+[project.scripts]
+git-archaeologist = "git_archaeologist:main"
